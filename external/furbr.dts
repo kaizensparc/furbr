@@ -1,0 +1,63 @@
+/dts-v1/;
+
+#include "rockchip/rk3399-roc-pc.dtsi"
+
+/ {
+	model = "Firefly ROC-RK3399-PC Board";
+	compatible = "firefly,roc-rk3399-pc", "rockchip,rk3399";
+};
+
+// CSI
+&mipi_dphy_rx0 {
+	status = "okay";
+};
+
+&isp0 {
+	status = "okay";
+};
+
+&isp1 {
+	status = "okay";
+};
+
+&pinctrl {
+	cameras {
+		mipi_rst: mipi-rst {
+			rockchip,pins = <0 RK_PB0 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+};
+
+// On J8_MIPI_CAMERA0
+&i2c1 {
+	ov4689: camera@20 {
+		compatible = "ovti,ov4689";
+		reg = <0x20>;
+
+		clocks = <&cru SCLK_CIF_OUT>;
+		clock-names = "xvclk";
+
+		avdd-supply = <&vcc_sys>;
+		dovdd-supply = <&vcc_1v8>;
+		dvdd-supply = <&vcc_sys>;
+
+		//powerdown-gpios = <&pio 107 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&mipi_rst>;
+
+		orientation = <2>;
+		rotation = <0>;
+
+		port {
+			wcam_out: endpoint {
+				remote-endpoint = <&mipi_dphy_rx0>;
+				data-lanes = <1 2 3 4>;
+				link-frequencies = /bits/ 64 <504000000>;
+			};
+		};
+
+		};
+};
+
+// On J17_MIPI_CAMERA1
+&i2c4 {
+};
